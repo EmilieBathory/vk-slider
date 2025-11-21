@@ -1,12 +1,14 @@
+// package.json
 {
-"name": "vk-slider",
-"version": "1.0.0",
-"description": "VK Slider Tilda integration",
-"main": "server.js",
-"scripts": {
-"start": "node server.js"
-},
-"dependencies": {
-"express": "^4.18.2"
-}
+  "name": "vk-slider",
+  "version": "1.0.0",
+  "description": "VK Slider Tilda integration",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
 }
