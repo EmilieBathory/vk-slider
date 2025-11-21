@@ -1,13 +1,10 @@
 import express from "express";
 import path from "path";
 import fs from "fs";
-import fetch from "node-fetch";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import fetch from "node-fetch"; // если Node 22+, можно использовать встроенный fetch без установки
 
 const app = express();
+const __dirname = path.resolve();
 
 // Папка с публичными файлами
 const publicDir = path.join(__dirname, "public");
@@ -20,22 +17,19 @@ if (!fs.existsSync(indexPath)) console.error("Файл index.html не найд�
 // Раздача статики
 app.use(express.static(publicDir));
 
-// API маршрут для постов VK
+// API маршрут для постов VK (публичная группа)
 app.get("/api/posts", async (req, res) => {
-const token = process.env.VK_TOKEN; // токен группы
-const owner = "39760212"; // ID группы без минуса для токена группы
-
-if (!token) return res.status(500).json({ error: "VK_TOKEN не задан" });
-
 try {
-const url = `https://api.vk.com/method/wall.get?owner_id=${owner}&count=10&access_token=${token}&v=5.199`;
+const groupId = "39760212"; // ID группы без минуса
+const url = `https://api.vk.com/method/widgets.getPosts?owner_id=-${groupId}&count=10&v=5.199`;
+
+```
 const response = await fetch(url);
 const data = await response.json();
 
-```
 if (data.error) return res.status(500).json({ error: data.error });
 
-res.json(data.response);
+res.json(data.response.posts || []);
 ```
 
 } catch (err) {
