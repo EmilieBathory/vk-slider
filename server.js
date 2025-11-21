@@ -3,10 +3,14 @@ const path = require("path");
 
 const app = express();
 
+// Проверка версии Node и токена (для Render)
+console.log("NODE VERSION:", process.version);
+console.log("VK_TOKEN задан:", !!process.env.VK_TOKEN);
+
 // Раздача статических файлов из public
 app.use(express.static(path.join(__dirname, "public")));
 
-// API маршрут для получения постов VK с расширенной отладкой
+// API маршрут для получения постов VK
 app.get("/api/posts", async (req, res) => {
 const token = process.env.VK_TOKEN;
 const owner = "-39760212";
@@ -41,8 +45,11 @@ res.status(500).json({ error: err.message });
 
 // Любые другие маршруты отдаём index.html
 app.get("*", (req, res) => {
-res.sendFile(path.join(__dirname, "public", "index.html"));
+const indexPath = path.join(__dirname, "public", "index.html");
+console.log("Отдаём index.html:", indexPath);
+res.sendFile(indexPath);
 });
 
+// Порт
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Server running on port ${port}`));
