@@ -1,14 +1,33 @@
 const express = require("express");
 const path = require("path");
+const fs = require("fs");
 
 const app = express();
 
-// Проверка версии Node и токена (для Render)
+// Логи для отладки
 console.log("NODE VERSION:", process.version);
 console.log("VK_TOKEN задан:", !!process.env.VK_TOKEN);
 
-// Раздача статических файлов из public
-app.use(express.static(path.join(__dirname, "public")));
+// Путь к папке public
+const publicDir = path.join(__dirname, "public");
+const indexPath = path.join(publicDir, "index.html");
+
+// Проверяем, что папка public существует
+if (!fs.existsSync(publicDir)) {
+console.error("Папка public не найдена:", publicDir);
+} else {
+console.log("Папка public найдена:", publicDir);
+}
+
+// Проверяем, что index.html существует
+if (!fs.existsSync(indexPath)) {
+console.error("Файл index.html не найден:", indexPath);
+} else {
+console.log("Файл index.html найден:", indexPath);
+}
+
+// Раздача статических файлов
+app.use(express.static(publicDir));
 
 // API маршрут для получения постов VK
 app.get("/api/posts", async (req, res) => {
@@ -45,11 +64,14 @@ res.status(500).json({ error: err.message });
 
 // Любые другие маршруты отдаём index.html
 app.get("*", (req, res) => {
-const indexPath = path.join(__dirname, "public", "index.html");
 console.log("Отдаём index.html:", indexPath);
-res.sendFile(indexPath);
+res.sendFile(indexPath, err => {
+if (err) {
+console.error("Ошибка при отдаче index.html:", err);
+res.status(500).send("Ошибка сервера");
+}
+});
 });
 
-// Порт
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Server running on port ${port}`));
