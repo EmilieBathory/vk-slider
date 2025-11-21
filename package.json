@@ -1,7 +1,6 @@
 {
   "name": "vk-slider",
   "version": "1.0.0",
-  "description": "VK Slider Tilda integration",
   "type": "module",
   "main": "server.js",
   "scripts": {
@@ -11,4 +10,3 @@
     "express": "^4.18.2"
   }
 }
-
