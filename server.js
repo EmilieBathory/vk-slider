@@ -1,6 +1,10 @@
-const express = require("express");
-const path = require("path");
-const fs = require("fs");
+import express from "express";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const publicDir = path.join(__dirname, "public");
@@ -15,31 +19,28 @@ app.use(express.static(publicDir));
 
 // API маршрут для постов VK с токеном пользователя
 app.get("/api/posts", async (req, res) => {
-const token = process.env.VK_TOKEN; // токен пользователя VK
-const owner = "-39760212"; // минус перед ID группы для wall.get
+  const token = process.env.VK_TOKEN; // токен пользователя VK
+  const owner = "-39760212"; // минус перед ID группы
 
-if (!token) return res.status(500).json({ error: "VK_TOKEN не задан" });
+  if (!token) return res.status(500).json({ error: "VK_TOKEN не задан" });
 
-try {
-const url = `https://api.vk.com/method/wall.get?owner_id=${owner}&count=10&access_token=${token}&v=5.199`;
-const response = await fetch(url); // используем встроенный fetch Node 22+
-const data = await response.json();
+  try {
+    const url = `https://api.vk.com/method/wall.get?owner_id=${owner}&count=10&access_token=${token}&v=5.199`;
+    const response = await fetch(url);
+    const data = await response.json();
 
-```
-if (data.error) return res.status(500).json({ error: data.error });
+    if (data.error) return res.status(500).json({ error: data.error });
 
-res.json(data.response.items || []);
-```
-
-} catch (err) {
-res.status(500).json({ error: err.message });
-}
+    res.json(data.response.items || []);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Любые другие маршруты → index.html
 app.get("*", (req, res) => {
-if (!fs.existsSync(indexPath)) return res.status(500).send("index.html не найден на сервере");
-res.sendFile(indexPath);
+  if (!fs.existsSync(indexPath)) return res.status(500).send("index.html не найден на сервере");
+  res.sendFile(indexPath);
 });
 
 // Порт
