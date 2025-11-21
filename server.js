@@ -1,5 +1,6 @@
 const express = require("express");
 const path = require("path");
+const fs = require("fs");
 
 const app = express();
 
@@ -7,13 +8,26 @@ const app = express();
 const publicDir = path.join(__dirname, "public");
 const indexPath = path.join(publicDir, "index.html");
 
-// Раздача статических файлов
-app.use(express.static(publicDir));
-
-// Логи для Render
+// Логи для отладки
 console.log("NODE VERSION:", process.version);
 console.log("VK_TOKEN задан:", !!process.env.VK_TOKEN);
-console.log("Путь к index.html:", indexPath);
+
+// Проверяем наличие папки public и файла index.html
+if (!fs.existsSync(publicDir)) {
+console.error("Папка public не найдена:", publicDir);
+} else {
+console.log("Папка public найдена:", publicDir);
+}
+
+if (!fs.existsSync(indexPath)) {
+console.error("Файл index.html не найден:", indexPath);
+} else {
+console.log("Файл index.html найден:", indexPath);
+console.log("Содержимое public:", fs.readdirSync(publicDir));
+}
+
+// Раздача статических файлов
+app.use(express.static(publicDir));
 
 // API маршрут для получения постов VK
 app.get("/api/posts", async (req, res) => {
@@ -50,7 +64,9 @@ res.status(500).json({ error: err.message });
 
 // Любые другие маршруты отдаём index.html
 app.get("*", (req, res) => {
-console.log("Отдаём index.html:", indexPath);
+if (!fs.existsSync(indexPath)) {
+return res.status(500).send("index.html не найден на сервере");
+}
 res.sendFile(indexPath, err => {
 if (err) {
 console.error("Ошибка при отдаче index.html:", err);
