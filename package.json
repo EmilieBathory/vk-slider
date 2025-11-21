@@ -1,14 +1,14 @@
+1️⃣ package.json (CommonJS, Node 22+)
 {
   "name": "vk-slider",
   "version": "1.0.0",
   "description": "VK Slider Tilda integration",
   "main": "server.js",
-  "type": "commonjs",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.18.2",
-    "node-fetch": "^2.6.12"
+    "node-fetch": "^3.4.0"
   }
 }
