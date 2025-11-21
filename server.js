@@ -1,7 +1,6 @@
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
-const fetch = require("node-fetch");
 
 const app = express();
 
@@ -25,7 +24,7 @@ if (!token) return res.status(500).json({ error: "VK_TOKEN не задан" });
 
 try {
 const url = `https://api.vk.com/method/wall.get?owner_id=${owner}&count=10&access_token=${token}&v=5.199`;
-const response = await fetch(url);
+const response = await fetch(url); // встроенный fetch Node.js 22+
 const data = await response.json();
 
 ```
