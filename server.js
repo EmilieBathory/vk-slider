@@ -6,21 +6,35 @@ const app = express();
 // Раздача статических файлов из public
 app.use(express.static(path.join(__dirname, "public")));
 
-// API маршрут для получения постов VK
+// API маршрут для получения постов VK с расширенной отладкой
 app.get("/api/posts", async (req, res) => {
-const token = process.env.VK_TOKEN; // убедись, что VK_TOKEN задан на Render
+const token = process.env.VK_TOKEN;
 const owner = "-39760212";
 
 if (!token) {
+console.error("VK_TOKEN не задан");
 return res.status(500).json({ error: "VK_TOKEN не задан" });
 }
 
 try {
 const url = `https://api.vk.com/method/wall.get?owner_id=${owner}&count=10&access_token=${token}&v=5.199`;
+console.log("Запрос VK:", url);
+
+```
 const response = await fetch(url);
 const data = await response.json();
-res.json(data);
+
+if (data.error) {
+  console.error("Ошибка VK API:", data.error);
+  return res.status(500).json({ error: data.error });
+}
+
+console.log("Успешный ответ VK:", data.response);
+res.json(data.response);
+```
+
 } catch (err) {
+console.error("Ошибка запроса VK:", err.message);
 res.status(500).json({ error: err.message });
 }
 });
