@@ -1,7 +1,6 @@
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
-const fetch = require("node-fetch"); // если Node 22+, можно использовать встроенный fetch
 
 const app = express();
 const publicDir = path.join(__dirname, "public");
@@ -11,7 +10,7 @@ const indexPath = path.join(publicDir, "index.html");
 if (!fs.existsSync(publicDir)) console.error("Папка public не найдена:", publicDir);
 if (!fs.existsSync(indexPath)) console.error("Файл index.html не найден:", indexPath);
 
-// Раздача статических файлов
+// Раздача статики
 app.use(express.static(publicDir));
 
 // API маршрут для постов VK с токеном пользователя
@@ -23,7 +22,7 @@ if (!token) return res.status(500).json({ error: "VK_TOKEN не задан" });
 
 try {
 const url = `https://api.vk.com/method/wall.get?owner_id=${owner}&count=10&access_token=${token}&v=5.199`;
-const response = await fetch(url);
+const response = await fetch(url); // используем встроенный fetch Node 22+
 const data = await response.json();
 
 ```
