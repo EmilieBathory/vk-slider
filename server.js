@@ -21,7 +21,8 @@ app.get("/slider", async (req, res) => {
         if (photo) {
           const sizes = photo.photo.sizes;
           const largest = sizes[sizes.length - 1];
-          imgHTML = `<img src="${largest.url}" style="width:100%;height:200px;object-fit:cover;border-radius:12px 12px 0 0;">`;
+          imgHTML = `<img src="${largest.url}" 
+                          style="width:100%;height:200px;object-fit:cover;border-radius:12px 12px 0 0;">`;
         }
       }
 
@@ -46,7 +47,8 @@ app.get("/slider", async (req, res) => {
       <style>
         body { margin:0; font-family:sans-serif; background:#f9f9f9; }
         .slider { display:flex; gap:20px; padding:20px; overflow-x:auto; }
-        .slide { flex:0 0 300px; background:#fff; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.08); }
+        .slide { flex:0 0 300px; background:#fff; border-radius:12px; 
+                 box-shadow:0 10px 25px rgba(0,0,0,0.08); }
         .slide img { display:block; }
       </style>
       </head>
@@ -65,4 +67,3 @@ app.get("/slider", async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
