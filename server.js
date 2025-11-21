@@ -1,33 +1,19 @@
 const express = require("express");
 const path = require("path");
-const fs = require("fs");
 
 const app = express();
 
-// Логи для отладки
-console.log("NODE VERSION:", process.version);
-console.log("VK_TOKEN задан:", !!process.env.VK_TOKEN);
-
-// Путь к папке public
+// Папка с публичными файлами
 const publicDir = path.join(__dirname, "public");
 const indexPath = path.join(publicDir, "index.html");
 
-// Проверяем, что папка public существует
-if (!fs.existsSync(publicDir)) {
-console.error("Папка public не найдена:", publicDir);
-} else {
-console.log("Папка public найдена:", publicDir);
-}
-
-// Проверяем, что index.html существует
-if (!fs.existsSync(indexPath)) {
-console.error("Файл index.html не найден:", indexPath);
-} else {
-console.log("Файл index.html найден:", indexPath);
-}
-
 // Раздача статических файлов
 app.use(express.static(publicDir));
+
+// Логи для Render
+console.log("NODE VERSION:", process.version);
+console.log("VK_TOKEN задан:", !!process.env.VK_TOKEN);
+console.log("Путь к index.html:", indexPath);
 
 // API маршрут для получения постов VK
 app.get("/api/posts", async (req, res) => {
@@ -35,7 +21,7 @@ const token = process.env.VK_TOKEN;
 const owner = "-39760212";
 
 if (!token) {
-console.error("VK_TOKEN не задан");
+console.error("VK_TOKEN не задан!");
 return res.status(500).json({ error: "VK_TOKEN не задан" });
 }
 
@@ -73,5 +59,6 @@ res.status(500).send("Ошибка сервера");
 });
 });
 
+// Порт
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Server running on port ${port}`));
