@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
+const fetch = require("node-fetch");
 
 const app = express();
 
@@ -12,18 +13,12 @@ const indexPath = path.join(publicDir, "index.html");
 console.log("NODE VERSION:", process.version);
 console.log("VK_TOKEN задан:", !!process.env.VK_TOKEN);
 
-// Проверяем наличие папки public и файла index.html
+// Проверяем наличие папки public и index.html
 if (!fs.existsSync(publicDir)) {
 console.error("Папка public не найдена:", publicDir);
-} else {
-console.log("Папка public найдена:", publicDir);
 }
-
 if (!fs.existsSync(indexPath)) {
 console.error("Файл index.html не найден:", indexPath);
-} else {
-console.log("Файл index.html найден:", indexPath);
-console.log("Содержимое public:", fs.readdirSync(publicDir));
 }
 
 // Раздача статических файлов
@@ -52,7 +47,6 @@ if (data.error) {
   return res.status(500).json({ error: data.error });
 }
 
-console.log("Успешный ответ VK:", data.response);
 res.json(data.response);
 ```
 
