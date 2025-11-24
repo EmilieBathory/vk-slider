@@ -1,30 +1,39 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8">
-<title>VK Slider</title>
-<style>
-  #slider { display: flex; overflow-x: auto; gap: 10px; }
-  .card { min-width: 200px; border: 1px solid #ccc; padding: 10px; border-radius: 5px; }
-</style>
-</head>
-<body>
-<h1>VK Slider</h1>
-<div id="slider"></div>
+import express from "express";
+import path from "path";
+import fs from "fs";
+import fetch from "node-fetch";
 
-<script>
-async function loadPosts() {
-  const res = await fetch('/api/posts');
-  const posts = await res.json();
-  const slider = document.getElementById('slider');
-  posts.forEach(post => {
-    const div = document.createElement('div');
-    div.className = 'card';
-    div.innerHTML = post.text ? post.text : 'Пустой пост';
-    slider.appendChild(div);
-  });
-}
-loadPosts();
-</script>
-</body>
-</html>
+const app = express();
+const __dirname = path.resolve();
+const publicDir = path.join(__dirname, "public");
+const indexPath = path.join(publicDir, "index.html");
+
+// Раздача статических файлов
+app.use(express.static(publicDir));
+
+// API маршрут для постов VK (публичная группа)
+app.get("/api/posts", async (req, res) => {
+  try {
+    const groupId = "39760212"; // ID группы VK без минуса
+    const url = `https://api.vk.com/method/widgets.getPosts?owner_id=-${groupId}&count=10&v=5.199`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.error) return res.status(500).json({ error: data.error });
+
+    res.json(data.response.posts || []);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Все остальные маршруты → index.html
+app.get("*", (req, res) => {
+  if (!fs.existsSync(indexPath)) return res.status(500).send("index.html не найден");
+  res.sendFile(indexPath);
+});
+
+// Порт
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log(`Server running on port ${port}`));
