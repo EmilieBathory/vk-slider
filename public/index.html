@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <title>VK Slider</title>
 <style>
-  body { font-family: Arial, sans-serif; margin: 20px; }
+  body { font-family: sans-serif; padding: 20px; }
   .slider { display: flex; overflow-x: auto; gap: 10px; }
-  .card { min-width: 200px; border: 1px solid #ccc; padding: 10px; border-radius: 5px; }
+  .card { flex: 0 0 300px; border: 1px solid #ccc; padding: 10px; border-radius: 6px; }
 </style>
 </head>
 <body>
@@ -15,19 +15,16 @@
 
 <script>
 async function loadPosts() {
-  try {
-    const res = await fetch('/api/posts');
-    const posts = await res.json();
-    const slider = document.getElementById('slider');
-    posts.forEach(post => {
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.innerHTML = `<p>${post.text || ''}</p>`;
-      slider.appendChild(card);
-    });
-  } catch (e) {
-    console.error(e);
-  }
+  const res = await fetch('/api/posts');
+  const posts = await res.json();
+  const slider = document.getElementById('slider');
+  
+  posts.forEach(post => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `<p>${post.text || ''}</p>`;
+    slider.appendChild(card);
+  });
 }
 
 loadPosts();
