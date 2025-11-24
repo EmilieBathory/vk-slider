@@ -1,33 +1,31 @@
 import express from "express";
+import fetch from "node-fetch"; // Node 18+ встроенный fetch тоже подойдет
 import path from "path";
+import { fileURLToPath } from "url";
 import fs from "fs";
-import fetch from "node-fetch";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
-const __dirname = path.resolve();
 const publicDir = path.join(__dirname, "public");
 const indexPath = path.join(publicDir, "index.html");
 
-// Проверка наличия папки и index.html
-if (!fs.existsSync(publicDir)) console.error("Папка public не найдена:", publicDir);
-if (!fs.existsSync(indexPath)) console.error("Файл index.html не найден:", indexPath);
-
-// Раздача статики
+// Статика
 app.use(express.static(publicDir));
 
-// API маршрут для постов VK (публичная группа)
+// API для постов публичной группы
 app.get("/api/posts", async (req, res) => {
   try {
-    const groupId = "39760212"; // ID группы без минуса
-    const url = `https://api.vk.com/method/widgets.getPosts?owner_id=-${groupId}&count=10&v=5.199`;
+    const groupId = "39760212"; // замените на ID вашей публичной группы
+    const url = `https://api.vk.com/method/wall.get?owner_id=-${groupId}&count=10&v=5.131`;
 
     const response = await fetch(url);
     const data = await response.json();
 
     if (data.error) return res.status(500).json({ error: data.error });
 
-    // Возвращаем массив постов
-    res.json(data.response.posts || []);
+    res.json(data.response.items || []);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
