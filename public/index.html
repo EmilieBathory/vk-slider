@@ -1,14 +1,23 @@
 <!DOCTYPE html>
-
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>VK Slider</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    .slider { display: flex; overflow-x: auto; gap: 10px; }
-    .card { flex: 0 0 300px; border: 1px solid #ccc; border-radius: 8px; padding: 10px; background: #f9f9f9; }
-    .card img { max-width: 100%; border-radius: 4px; }
+    .slider {
+      display: flex;
+      overflow-x: auto;
+      gap: 10px;
+      padding: 10px;
+    }
+    .card {
+      min-width: 200px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 10px;
+      background: #f8f8f8;
+      flex-shrink: 0;
+    }
   </style>
 </head>
 <body>
@@ -17,39 +26,21 @@
 
   <script>
     async function loadPosts() {
-      try {
-        const response = await fetch('/api/posts');
-        const posts = await response.json();
+      const res = await fetch("/api/posts");
+      const posts = await res.json();
 
-        const slider = document.getElementById('slider');
-        slider.innerHTML = '';
+      const slider = document.getElementById("slider");
+      slider.innerHTML = "";
 
-        posts.forEach(post => {
-          const card = document.createElement('div');
-          card.className = 'card';
-          let content = '';
-
-          if (post.text) content += `<p>${post.text}</p>`;
-          if (post.attachments) {
-            post.attachments.forEach(att => {
-              if (att.photo && att.photo.sizes) {
-                const largest = att.photo.sizes[att.photo.sizes.length - 1];
-                content += `<img src="${largest.url}" alt="">`;
-              }
-            });
-          }
-
-          card.innerHTML = content;
-          slider.appendChild(card);
-        });
-
-      } catch (err) {
-        console.error('Ошибка при загрузке постов:', err);
-      }
+      posts.forEach(post => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.textContent = post.text;
+        slider.appendChild(card);
+      });
     }
 
     loadPosts();
   </script>
-
 </body>
 </html>
