@@ -1,31 +1,35 @@
 import express from "express";
-import fetch from "node-fetch"; // Node 18+ встроенный fetch тоже подойдет
 import path from "path";
-import { fileURLToPath } from "url";
 import fs from "fs";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import fetch from "node-fetch";
+import { parseStringPromise } from "xml2js";
 
 const app = express();
+const __dirname = path.resolve();
 const publicDir = path.join(__dirname, "public");
 const indexPath = path.join(publicDir, "index.html");
 
-// Статика
+// Раздача статики
 app.use(express.static(publicDir));
 
-// API для постов публичной группы
+// API маршрут для получения постов из RSS группы VK
 app.get("/api/posts", async (req, res) => {
   try {
-    const groupId = "39760212"; // замените на ID вашей публичной группы
-    const url = `https://api.vk.com/method/wall.get?owner_id=-${groupId}&count=10&v=5.131`;
+    const groupId = "39760212"; // твой ID группы
+    const rssUrl = `https://vk.com/rss.php?gid=${groupId}`;
 
-    const response = await fetch(url);
-    const data = await response.json();
+    const response = await fetch(rssUrl);
+    const xml = await response.text();
+    const data = await parseStringPromise(xml);
 
-    if (data.error) return res.status(500).json({ error: data.error });
+    const posts = data.rss.channel[0].item.map(item => ({
+      title: item.title[0],
+      link: item.link[0],
+      description: item.description[0],
+      pubDate: item.pubDate[0]
+    }));
 
-    res.json(data.response.items || []);
+    res.json(posts);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
