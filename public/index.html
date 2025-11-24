@@ -1,14 +1,36 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VK Slider</title>
+<meta charset="UTF-8">
+<title>VK Slider</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; }
+  .slider { display: flex; overflow-x: auto; gap: 10px; }
+  .card { min-width: 200px; border: 1px solid #ccc; padding: 10px; border-radius: 5px; }
+</style>
 </head>
 <body>
+<h1>VK Slider</h1>
+<div class="slider" id="slider"></div>
 
-  <h1>VK Slider работает!</h1>
-  <p>Бэкенд успешно запущен.</p>
+<script>
+async function loadPosts() {
+  try {
+    const res = await fetch('/api/posts');
+    const posts = await res.json();
+    const slider = document.getElementById('slider');
+    posts.forEach(post => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `<p>${post.text || ''}</p>`;
+      slider.appendChild(card);
+    });
+  } catch (e) {
+    console.error(e);
+  }
+}
 
+loadPosts();
+</script>
 </body>
 </html>
