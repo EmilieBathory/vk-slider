@@ -4,26 +4,32 @@
 <meta charset="UTF-8">
 <title>VK Slider</title>
 <style>
-  .slider { display: flex; overflow-x: auto; gap: 10px; }
-  .card { min-width: 300px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; }
+  body { font-family: sans-serif; }
+  .slider { display: flex; overflow-x: auto; gap: 10px; padding: 10px; }
+  .card { min-width: 300px; border: 1px solid #ccc; padding: 10px; border-radius: 8px; }
 </style>
 </head>
 <body>
 <h1>VK Slider</h1>
 <div class="slider" id="slider"></div>
+
 <script>
 async function loadPosts() {
+  const slider = document.getElementById('slider');
   const res = await fetch('/api/posts');
   const posts = await res.json();
-  const slider = document.getElementById('slider');
 
   posts.forEach(post => {
     const card = document.createElement('div');
     card.className = 'card';
-    card.innerHTML = post.text || 'Без текста';
+    card.innerHTML = `
+      <p>${post.text || ''}</p>
+      ${post.attachments ? post.attachments.map(a => a.photo ? `<img src="${a.photo.sizes.pop().url}" width="100%">` : '').join('') : ''}
+    `;
     slider.appendChild(card);
   });
 }
+
 loadPosts();
 </script>
 </body>
