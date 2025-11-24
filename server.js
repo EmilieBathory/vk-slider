@@ -1,48 +1,30 @@
-import express from "express";
-import path from "path";
-import fs from "fs";
-import fetch from "node-fetch";
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>VK Slider</title>
+<style>
+  #slider { display: flex; overflow-x: auto; gap: 10px; }
+  .card { min-width: 200px; border: 1px solid #ccc; padding: 10px; border-radius: 5px; }
+</style>
+</head>
+<body>
+<h1>VK Slider</h1>
+<div id="slider"></div>
 
-const app = express();
-const __dirname = path.resolve();
-
-// Папка с публичными файлами
-const publicDir = path.join(__dirname, "public");
-const indexPath = path.join(publicDir, "index.html");
-
-// Проверка существования папки и файла
-if (!fs.existsSync(publicDir)) console.error("Папка public не найдена:", publicDir);
-if (!fs.existsSync(indexPath)) console.error("Файл index.html не найден:", indexPath);
-
-// Раздача статики
-app.use(express.static(publicDir));
-
-// API маршрут для постов VK с токеном пользователя
-app.get("/api/posts", async (req, res) => {
-  const token = process.env.VK_TOKEN; // токен пользователя VK
-  const owner = "-39760212"; // ID группы с минусом для wall.get
-
-  if (!token) return res.status(500).json({ error: "VK_TOKEN не задан" });
-
-  try {
-    const url = `https://api.vk.com/method/wall.get?owner_id=${owner}&count=10&access_token=${token}&v=5.199`;
-    const response = await fetch(url);
-    const data = await response.json();
-
-    if (data.error) return res.status(500).json({ error: data.error });
-
-    res.json(data.response.items || []);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Любые другие маршруты → index.html
-app.get("*", (req, res) => {
-  if (!fs.existsSync(indexPath)) return res.status(500).send("index.html не найден на сервере");
-  res.sendFile(indexPath);
-});
-
-// Порт
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Server running on port ${port}`));
+<script>
+async function loadPosts() {
+  const res = await fetch('/api/posts');
+  const posts = await res.json();
+  const slider = document.getElementById('slider');
+  posts.forEach(post => {
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = post.text ? post.text : 'Пустой пост';
+    slider.appendChild(div);
+  });
+}
+loadPosts();
+</script>
+</body>
+</html>
