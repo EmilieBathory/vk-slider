@@ -1,47 +1,46 @@
 <!DOCTYPE html>
-
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VK Slider</title>
-<style>
-  body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f0f0f0; }
-  h1 { text-align:center; padding:20px 0; background:#0077ff; color:white; margin:0; }
-  .slider { display:flex; overflow-x:auto; gap:15px; padding:20px; scroll-behavior:smooth; }
-  .card { min-width:260px; background:white; padding:15px; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1); flex-shrink:0; }
-  .card h3 { font-size:16px; margin:0 0 10px; }
-  .card p { font-size:14px; margin:0 0 10px; }
-  .card a { color:#0077ff; text-decoration:none; font-weight:bold; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VK Slider</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f0f0f0; }
+    h1 { text-align: center; padding: 20px 0; background: #0077ff; color: white; margin: 0; }
+    .slider { display: flex; overflow-x: auto; gap: 15px; padding: 20px; scroll-behavior: smooth; }
+    .card { min-width: 260px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); flex-shrink: 0; }
+    .card h3 { font-size: 16px; margin: 0 0 10px; }
+    .card p { font-size: 14px; margin: 0 0 10px; }
+    .card a { color: #0077ff; text-decoration: none; font-weight: bold; }
+  </style>
 </head>
 <body>
-<h1>VK Slider</h1>
-<div id="slider" class="slider"></div>
-<script>
-async function loadPosts() {
-  try {
-    const res = await fetch("/api/posts");
-    const posts = await res.json();
-    const slider = document.getElementById("slider");
-    slider.innerHTML = "";
-    posts.forEach(post => {
-      const div = document.createElement("div");
-      div.className = "card";
-      div.innerHTML = `
-        <h3>${post.title}</h3>
-        <p>${post.content}</p>
-        <a href="${post.link}" target="_blank">Читать</a>
-      `;
-      slider.appendChild(div);
-    });
-  } catch (err) {
-    console.error(err);
-  }
-}
+  <h1>VK Slider</h1>
+  <div id="slider" class="slider"></div>
+  <script>
+    async function loadPosts() {
+      try {
+        const res = await fetch("/api/posts");
+        const posts = await res.json();
+        const slider = document.getElementById("slider");
+        slider.innerHTML = "";
+        posts.forEach(post => {
+          const div = document.createElement("div");
+          div.className = "card";
+          div.innerHTML = `
+            <h3>${post.title}</h3>
+            <p>${post.content}</p>
+            <a href="${post.link}" target="_blank">Читать</a>
+          `;
+          slider.appendChild(div);
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
 
-loadPosts();
-setInterval(loadPosts, 60000); // обновление каждые 60 секунд </script>
-
+    loadPosts();
+    setInterval(loadPosts, 60000);
+  </script>
 </body>
 </html>
