@@ -9,33 +9,32 @@ const publicDir = path.join(__dirname, "public");
 const indexPath = path.join(publicDir, "index.html");
 const rssParser = new Parser();
 
-// Проверка папки и файла
+// Проверки
 if (!fs.existsSync(publicDir)) console.error("Папка public не найдена:", publicDir);
 if (!fs.existsSync(indexPath)) console.error("Файл index.html не найден:", indexPath);
 
 app.use(express.static(publicDir));
 
-// Вставь сюда RSS URL своей группы
-const rssUrl = "ТВОЙ_RSS_URL_ГРУППЫ";
+// Используем RSSHub URL
+const rssUrl = "https://rsshub.app/vk/group/39760212";
 
 app.get("/api/posts", async (req, res) => {
-try {
-const feed = await rssParser.parseURL(rssUrl);
-const items = feed.items.slice(0, 10).map(item => ({
-title: item.title,
-link: item.link,
-pubDate: item.pubDate,
-content: item.contentSnippet
-}));
-res.json(items);
-} catch (err) {
-res.status(500).json({ error: err.message });
-}
+  try {
+    const feed = await rssParser.parseURL(rssUrl);
+    const items = feed.items.slice(0, 10).map(item => ({
+      title: item.title,
+      link: item.link,
+      pubDate: item.pubDate,
+      content: item.contentSnippet
+    }));
+    res.json(items);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// Любые другие маршруты → index.html
 app.get("*", (req, res) => {
-res.sendFile(indexPath);
+  res.sendFile(indexPath);
 });
 
 const port = process.env.PORT || 3000;
