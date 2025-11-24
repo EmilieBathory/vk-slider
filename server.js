@@ -1,44 +1,44 @@
 import express from "express";
+import fetch from "node-fetch";
+import cheerio from "cheerio";
 import path from "path";
-import fs from "fs";
-import Parser from "rss-parser";
+import { fileURLToPath } from "url";
 
-const __dirname = path.resolve();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
+const PORT = process.env.PORT || 3000;
+
 const publicDir = path.join(__dirname, "public");
 const indexPath = path.join(publicDir, "index.html");
 
-// Проверка папки и файла
-if (!fs.existsSync(publicDir)) console.error("Папка public не найдена:", publicDir);
-if (!fs.existsSync(indexPath)) console.error("Файл index.html не найден:", indexPath);
-
+// Раздача статики
 app.use(express.static(publicDir));
 
-const parser = new Parser();
-
-// API маршрут для постов VK через RSS
+// API маршрут для постов VK (публичная группа)
 app.get("/api/posts", async (req, res) => {
-try {
-const groupId = "39760212"; // ваш ID группы
-const rssUrl = `https://vk.com/feeds/${groupId}?section=posts`; // ссылка на RSS
-const feed = await parser.parseURL(rssUrl);
+  try {
+    const groupUrl = "https://vk.com/public39760212"; // замени на свою группу
+    const response = await fetch(groupUrl);
+    const html = await response.text();
+    const $ = cheerio.load(html);
 
-```
-const posts = feed.items.map(item => ({
-  title: item.title,
-  text: item.contentSnippet || item.content || '',
-  link: item.link,
-}));
+    const posts = [];
+    $(".wall_text").each((i, elem) => {
+      const text = $(elem).text().trim();
+      posts.push({ text });
+    });
 
-res.json(posts);
-```
-
-} catch (err) {
-console.error(err);
-res.status(500).json({ error: err.message });
-}
+    res.json(posts.slice(0, 10)); // возвращаем 10 постов
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Любые другие маршруты → index.html
 app.get("*", (req, res) => {
-if (!fs.existsSync(indexPath)) return res.status(500).send("index
+  res.sendFile(indexPath);
+});
+
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
