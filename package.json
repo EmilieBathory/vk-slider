@@ -1,14 +1,11 @@
 {
   "name": "vk-slider",
   "version": "1.0.0",
-  "description": "VK Slider Tilda integration",
+  "description": "VK Slider for public group",
   "type": "module",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
-  },
-  "engines": {
-    "node": ">=18"
   },
   "dependencies": {
     "express": "^4.18.2",
