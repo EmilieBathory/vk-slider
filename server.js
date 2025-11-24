@@ -1,7 +1,6 @@
 import express from "express";
 import path from "path";
 import fs from "fs";
-import fetch from "node-fetch";
 import Parser from "rss-parser";
 
 const __dirname = path.resolve();
@@ -16,8 +15,8 @@ if (!fs.existsSync(indexPath)) console.error("Файл index.html не найд�
 
 app.use(express.static(publicDir));
 
-// RSS URL твоей группы
-const rssUrl = "ТУТ_ВСТАВЬ_RSS_СВОЕЙ_ГРУППЫ";
+// Вставь сюда RSS URL своей группы
+const rssUrl = "ТВОЙ_RSS_URL_ГРУППЫ";
 
 app.get("/api/posts", async (req, res) => {
 try {
